@@ -1,0 +1,444 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.rabbitconsumer.demo.dao.RabbitconfigMapper" >
+  <resultMap id="BaseResultMap" type="com.rabbitconsumer.demo.pojo.Rabbitconfig" extends="associationMap">
+	<id column="id" property="id" />
+	<result column="rabbitmq_host" property="rabbitmqHost" />
+	<result column="rabbitmq_port" property="rabbitmqPort" />
+	<result column="rabbitmq_user_name" property="rabbitmqUserName" />
+	<result column="rabbitmq_password" property="rabbitmqPassword" />
+	<result column="yqs_host" property="yqsHost" />
+	<result column="yqs_userId" property="yqsUserId" />
+	<result column="appId" property="appId" />
+	<result column="yqs_secret" property="yqsSecret" />
+	<result column="rabbitmq_queue_name" property="rabbitmqQueueName" />
+	<result column="rabbitmq_virtual_host" property="rabbitmqVirtualHost" />
+	<result column="status" property="status" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+		`id`
+		,`rabbitmq_host`
+		,`rabbitmq_port`
+		,`rabbitmq_user_name`
+		,`rabbitmq_password`
+		,`yqs_host`
+		,`yqs_userId`
+		,`appId`
+		,`yqs_secret`
+		,`rabbitmq_queue_name`
+		,`rabbitmq_virtual_host`
+		,`status`
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    SELECT 
+    <include refid="Base_Column_List" />
+    FROM `rabbitconfig`
+    WHERE `id` = #{id}
+  </select>
+  <select id="getByCondition" resultMap="BaseResultMap" parameterType="java.util.Map" >
+    SELECT 
+    <include refid="Base_Column_List" />
+    FROM `rabbitconfig`
+    <include refid="map_params_where_condition" />
+    <if test="orderBy == null" >
+      ORDER BY `id` DESC
+    </if>
+    <if test="orderBy != null and orderBy != 'no'" >
+      ORDER BY ${orderBy}
+    </if>
+	LIMIT 1
+  </select>
+  <select id="aggregate" parameterType="java.util.Map" resultType="java.util.Map">
+    SELECT ${aggregate_sql} FROM `rabbitconfig`
+    <include refid="map_params_where_condition" />
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    DELETE FROM `rabbitconfig`
+    WHERE `id` = #{id}
+  </delete>
+  <insert id="insert" parameterType="com.rabbitconsumer.demo.pojo.Rabbitconfig" >
+    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    INSERT INTO `rabbitconfig` (
+	  `rabbitmq_host`
+	  ,`rabbitmq_port`
+	  ,`rabbitmq_user_name`
+	  ,`rabbitmq_password`
+	  ,`yqs_host`
+	  ,`yqs_userId`
+	  ,`appId`
+	  ,`yqs_secret`
+	  ,`rabbitmq_queue_name`
+	  ,`rabbitmq_virtual_host`
+	  ,`status`
+      )
+    VALUES (
+		  
+		  #{rabbitmqHost}
+		  ,
+		  #{rabbitmqPort}
+		  ,
+		  #{rabbitmqUserName}
+		  ,
+		  #{rabbitmqPassword}
+		  ,
+		  #{yqsHost}
+		  ,
+		  #{yqsUserId}
+		  ,
+		  #{appId}
+		  ,
+		  #{yqsSecret}
+		  ,
+		  #{rabbitmqQueueName}
+		  ,
+		  #{rabbitmqVirtualHost}
+		  ,
+		  #{status}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.rabbitconsumer.demo.pojo.Rabbitconfig" >
+    <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    INSERT INTO `rabbitconfig`
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+		  <if test="rabbitmqHost != null" >
+			`rabbitmq_host`,
+		  </if>
+		  <if test="rabbitmqPort != null" >
+			`rabbitmq_port`,
+		  </if>
+		  <if test="rabbitmqUserName != null" >
+			`rabbitmq_user_name`,
+		  </if>
+		  <if test="rabbitmqPassword != null" >
+			`rabbitmq_password`,
+		  </if>
+		  <if test="yqsHost != null" >
+			`yqs_host`,
+		  </if>
+		  <if test="yqsUserId != null" >
+			`yqs_userId`,
+		  </if>
+		  <if test="appId != null" >
+			`appId`,
+		  </if>
+		  <if test="yqsSecret != null" >
+			`yqs_secret`,
+		  </if>
+		  <if test="rabbitmqQueueName != null" >
+			`rabbitmq_queue_name`,
+		  </if>
+		  <if test="rabbitmqVirtualHost != null" >
+			`rabbitmq_virtual_host`,
+		  </if>
+		  <if test="status != null" >
+			`status`,
+		  </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+		  <if test="rabbitmqHost != null" >
+			#{rabbitmqHost},
+		  </if>
+		  <if test="rabbitmqPort != null" >
+			#{rabbitmqPort},
+		  </if>
+		  <if test="rabbitmqUserName != null" >
+			#{rabbitmqUserName},
+		  </if>
+		  <if test="rabbitmqPassword != null" >
+			#{rabbitmqPassword},
+		  </if>
+		  <if test="yqsHost != null" >
+			#{yqsHost},
+		  </if>
+		  <if test="yqsUserId != null" >
+			#{yqsUserId},
+		  </if>
+		  <if test="appId != null" >
+			#{appId},
+		  </if>
+		  <if test="yqsSecret != null" >
+			#{yqsSecret},
+		  </if>
+		  <if test="rabbitmqQueueName != null" >
+			#{rabbitmqQueueName},
+		  </if>
+		  <if test="rabbitmqVirtualHost != null" >
+			#{rabbitmqVirtualHost},
+		  </if>
+		  <if test="status != null" >
+			#{status},
+		  </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.rabbitconsumer.demo.pojo.Rabbitconfig" >
+    UPDATE `rabbitconfig`
+    <set >
+	  <if test="rabbitmqHost != null" >
+        `rabbitmq_host` = #{rabbitmqHost},
+      </if>
+	  <if test="rabbitmqPort != null" >
+        `rabbitmq_port` = #{rabbitmqPort},
+      </if>
+	  <if test="rabbitmqUserName != null" >
+        `rabbitmq_user_name` = #{rabbitmqUserName},
+      </if>
+	  <if test="rabbitmqPassword != null" >
+        `rabbitmq_password` = #{rabbitmqPassword},
+      </if>
+	  <if test="yqsHost != null" >
+        `yqs_host` = #{yqsHost},
+      </if>
+	  <if test="yqsUserId != null" >
+        `yqs_userId` = #{yqsUserId},
+      </if>
+	  <if test="appId != null" >
+        `appId` = #{appId},
+      </if>
+	  <if test="yqsSecret != null" >
+        `yqs_secret` = #{yqsSecret},
+      </if>
+	  <if test="rabbitmqQueueName != null" >
+        `rabbitmq_queue_name` = #{rabbitmqQueueName},
+      </if>
+	  <if test="rabbitmqVirtualHost != null" >
+        `rabbitmq_virtual_host` = #{rabbitmqVirtualHost},
+      </if>
+	  <if test="status != null" >
+        `status` = #{status},
+      </if>
+    </set>
+    WHERE `id` = #{id}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.rabbitconsumer.demo.pojo.Rabbitconfig" >
+	UPDATE `rabbitconfig` SET
+        `rabbitmq_host` = #{rabbitmqHost},
+        `rabbitmq_port` = #{rabbitmqPort},
+        `rabbitmq_user_name` = #{rabbitmqUserName},
+        `rabbitmq_password` = #{rabbitmqPassword},
+        `yqs_host` = #{yqsHost},
+        `yqs_userId` = #{yqsUserId},
+        `appId` = #{appId},
+        `yqs_secret` = #{yqsSecret},
+        `rabbitmq_queue_name` = #{rabbitmqQueueName},
+        `rabbitmq_virtual_host` = #{rabbitmqVirtualHost},
+        `status` = #{status}
+    WHERE `id` = #{id}
+  </update>
+  <update id="updateByCondition" parameterType="java.util.Map" >
+    UPDATE `rabbitconfig`
+    <set>
+	  <if test="entity.rabbitmqHost != null" >
+        `rabbitmq_host` = #{entity.rabbitmqHost},
+      </if>
+	  <if test="entity.rabbitmqPort != null" >
+        `rabbitmq_port` = #{entity.rabbitmqPort},
+      </if>
+	  <if test="entity.rabbitmqUserName != null" >
+        `rabbitmq_user_name` = #{entity.rabbitmqUserName},
+      </if>
+	  <if test="entity.rabbitmqPassword != null" >
+        `rabbitmq_password` = #{entity.rabbitmqPassword},
+      </if>
+	  <if test="entity.yqsHost != null" >
+        `yqs_host` = #{entity.yqsHost},
+      </if>
+	  <if test="entity.yqsUserId != null" >
+        `yqs_userId` = #{entity.yqsUserId},
+      </if>
+	  <if test="entity.appId != null" >
+        `appId` = #{entity.appId},
+      </if>
+	  <if test="entity.yqsSecret != null" >
+        `yqs_secret` = #{entity.yqsSecret},
+      </if>
+	  <if test="entity.rabbitmqQueueName != null" >
+        `rabbitmq_queue_name` = #{entity.rabbitmqQueueName},
+      </if>
+	  <if test="entity.rabbitmqVirtualHost != null" >
+        `rabbitmq_virtual_host` = #{entity.rabbitmqVirtualHost},
+      </if>
+	  <if test="entity.status != null" >
+        `status` = #{entity.status},
+      </if>
+      <foreach collection="entity.nullColums" item="nullColum">
+        `${nullColum}` = NULL,
+      </foreach>
+    </set>
+    <include refid="map_params_where_condition" />
+  </update>
+  <update id="updateIncreateNumbers" parameterType="java.util.Map" >
+    UPDATE `rabbitconfig`
+    <set>
+      <foreach collection="increateNumbers" item="numberCloums">
+        `${numberCloums.column}` = `${numberCloums.column}` + #{numberCloums.number},
+      </foreach>
+    </set>
+    <include refid="map_params_where_condition" />
+  </update>
+  <sql id="map_params_where_condition" >
+    <trim prefix="WHERE" prefixOverrides="AND">
+	  <if test="id != null" >
+        AND `id` = #{id}
+	  </if>
+	  <if test="rabbitmqHost != null" >
+        AND `rabbitmq_host` = #{rabbitmqHost}
+	  </if>
+	  <if test="rabbitmqPort != null" >
+        AND `rabbitmq_port` = #{rabbitmqPort}
+	  </if>
+	  <if test="rabbitmqUserName != null" >
+        AND `rabbitmq_user_name` = #{rabbitmqUserName}
+	  </if>
+	  <if test="rabbitmqPassword != null" >
+        AND `rabbitmq_password` = #{rabbitmqPassword}
+	  </if>
+	  <if test="yqsHost != null" >
+        AND `yqs_host` = #{yqsHost}
+	  </if>
+	  <if test="yqsUserId != null" >
+        AND `yqs_userId` = #{yqsUserId}
+	  </if>
+	  <if test="appId != null" >
+        AND `appId` = #{appId}
+	  </if>
+	  <if test="yqsSecret != null" >
+        AND `yqs_secret` = #{yqsSecret}
+	  </if>
+	  <if test="rabbitmqQueueName != null" >
+        AND `rabbitmq_queue_name` = #{rabbitmqQueueName}
+	  </if>
+	  <if test="rabbitmqVirtualHost != null" >
+        AND `rabbitmq_virtual_host` = #{rabbitmqVirtualHost}
+	  </if>
+	  <if test="status != null" >
+        AND `status` = #{status}
+	  </if>
+	  <if test="condition != null">
+	  <if test="condition.id != null" >
+        AND `id` = #{condition.id}
+	  </if>
+	  <if test="condition.rabbitmqHost != null" >
+        AND `rabbitmq_host` = #{condition.rabbitmqHost}
+	  </if>
+	  <if test="condition.rabbitmqPort != null" >
+        AND `rabbitmq_port` = #{condition.rabbitmqPort}
+	  </if>
+	  <if test="condition.rabbitmqUserName != null" >
+        AND `rabbitmq_user_name` = #{condition.rabbitmqUserName}
+	  </if>
+	  <if test="condition.rabbitmqPassword != null" >
+        AND `rabbitmq_password` = #{condition.rabbitmqPassword}
+	  </if>
+	  <if test="condition.yqsHost != null" >
+        AND `yqs_host` = #{condition.yqsHost}
+	  </if>
+	  <if test="condition.yqsUserId != null" >
+        AND `yqs_userId` = #{condition.yqsUserId}
+	  </if>
+	  <if test="condition.appId != null" >
+        AND `appId` = #{condition.appId}
+	  </if>
+	  <if test="condition.yqsSecret != null" >
+        AND `yqs_secret` = #{condition.yqsSecret}
+	  </if>
+	  <if test="condition.rabbitmqQueueName != null" >
+        AND `rabbitmq_queue_name` = #{condition.rabbitmqQueueName}
+	  </if>
+	  <if test="condition.rabbitmqVirtualHost != null" >
+        AND `rabbitmq_virtual_host` = #{condition.rabbitmqVirtualHost}
+	  </if>
+	  <if test="condition.status != null" >
+        AND `status` = #{condition.status}
+	  </if>
+	  </if>
+	  <if test="vo != null and !vo.expressionChainList.empty">
+        AND
+        <foreach collection="vo.expressionChainList" item="expressionChain" separator="OR">
+          <if test="!expressionChain.expressionList.empty">
+            <foreach collection="expressionChain.expressionList" item="expression" separator="AND">
+              <choose>
+                <when test="expression.type == 0">
+                  `${expression.column}` ${expression.operator}
+                </when>
+                <when test="expression.type == 1">
+                  `${expression.column}` ${expression.operator} #{expression.value}
+                </when>
+                <when test="expression.type == 2">
+                  `${expression.column}` ${expression.operator} #{expression.value} AND #{expression.value1}
+                </when>
+                <when test="expression.type == 3">
+                  `${expression.column}` ${expression.operator}
+                  <foreach collection="expression.values" item="value" open="(" separator="," close=")">
+                    #{value}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </if>
+        </foreach>
+      </if>
+      <if test="expressionChainList != null and !expressionChainList.empty">
+        AND
+        <foreach collection="expressionChainList" item="expressionChain" separator="OR">
+          <if test="!expressionChain.expressionList.empty">
+            <foreach collection="expressionChain.expressionList" item="expression" separator="AND">
+              <choose>
+                <when test="expression.type == 0">
+                  `${expression.column}` ${expression.operator}
+                </when>
+                <when test="expression.type == 1">
+                  `${expression.column}` ${expression.operator} #{expression.value}
+                </when>
+                <when test="expression.type == 2">
+                  `${expression.column}` ${expression.operator} #{expression.value} AND #{expression.value1}
+                </when>
+                <when test="expression.type == 3">
+                  `${expression.column}` ${expression.operator}
+                  <foreach collection="expression.values" item="value" open="(" separator="," close=")">
+                    #{value}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </if>
+        </foreach>
+      </if>
+      <include refid="map_params_where_condition_ext" />
+    </trim>
+  </sql>
+  <select id="getList" resultMap="BaseResultMap" parameterType="java.util.Map" >
+    SELECT
+    <include refid="Base_Column_List" />
+    FROM `rabbitconfig`
+    <include refid="map_params_where_condition" />
+    <if test="orderBy == null" >
+      ORDER BY `id` DESC
+    </if>
+    <if test="orderBy != null and orderBy != 'no'" >
+      ORDER BY ${orderBy}
+    </if>
+    <if test="pageBeginIndex != null and pageSize != null" >
+      LIMIT #{pageBeginIndex},#{pageSize}
+    </if>
+    <if test="pageBeginIndex == null and pageSize != null" >
+      LIMIT #{pageSize}
+    </if>
+    <if test="pageBeginIndex != null and pageSize == null" >
+      LIMIT #{pageBeginIndex}
+    </if>
+  </select>
+  <delete id="delete" parameterType="java.util.Map" >
+    DELETE
+    FROM `rabbitconfig`
+    <include refid="map_params_where_condition" />
+  </delete>
+  <select id="getCount" resultType="java.lang.Integer" parameterType="java.util.Map" >
+    SELECT COUNT(1)
+    FROM `rabbitconfig`
+    <include refid="map_params_where_condition" />
+  </select>
+</mapper>
