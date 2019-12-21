@@ -1,9 +1,12 @@
 package com.rabbitconsumer.demo.configure.redisconfig;
 
 import com.google.common.collect.Lists;
+import com.rabbitconsumer.demo.configure.RabbitMqGroup;
 import com.rabbitconsumer.demo.controller.Receiver;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -31,6 +34,9 @@ public class RedisListener {
             new PatternTopic("stopUser")
     );
 
+    @Autowired
+    private RabbitMqGroup rabbitMqGroup;
+
 
     @Bean
     RedisMessageListenerContainer container(RedisConnectionFactory connectionFactory,
@@ -39,9 +45,9 @@ public class RedisListener {
                                             MessageListenerAdapter listenerAdapterStop) {
         RedisMessageListenerContainer container = new RedisMessageListenerContainer();
         container.setConnectionFactory(connectionFactory);
-        container.addMessageListener(listenerAdapterAdd,  new PatternTopic("addUser"));
-        container.addMessageListener(listenerAdapterStart,  new PatternTopic("startUser"));
-        container.addMessageListener(listenerAdapterStop,  new PatternTopic("stopUser"));
+        container.addMessageListener(listenerAdapterAdd,  new PatternTopic("addUser"+rabbitMqGroup.getGroup()));
+        container.addMessageListener(listenerAdapterStart,  new PatternTopic("startUser"+rabbitMqGroup.getGroup()));
+        container.addMessageListener(listenerAdapterStop,  new PatternTopic("stopUser"+rabbitMqGroup.getGroup()));
         return container;
     }
 

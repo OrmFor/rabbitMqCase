@@ -7,4 +7,6 @@ import lombok.Data;
 public class TestsRdisRequest {
 
     private String queueName;
+
+    private Integer group;
 }

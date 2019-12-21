@@ -1,5 +1,6 @@
 package com.rabbitconsumer.demo.controller;
 
+import com.rabbitconsumer.demo.configure.RabbitMqGroup;
 import com.rabbitconsumer.demo.domain.ChannelBean;
 import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
@@ -33,10 +34,14 @@ public class ChannelMapTask {
     @Autowired
     private CustomerListener customerListener;
 
+    @Autowired
+    private RabbitMqGroup rabbitMqGroup;
 
 
-    @Scheduled(cron = "*/5 * * * * ?")
+
+    @Scheduled(cron = "0 */30 * * * ?")
     public void channelMapTask() {
+        System.out.println(rabbitMqGroup.getGroup());
         ConcurrentHashMap<ChannelBean, Channel> channels = customerListener.getConcurrentHashMap();
         LOGGER.info("ChannelMapTask数量:" + channels.size());
 

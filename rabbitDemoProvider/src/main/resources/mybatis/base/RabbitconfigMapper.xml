@@ -14,6 +14,7 @@
 	<result column="rabbitmq_queue_name" property="rabbitmqQueueName" />
 	<result column="rabbitmq_virtual_host" property="rabbitmqVirtualHost" />
 	<result column="status" property="status" />
+	<result column="group" property="group" />
   </resultMap>
   <sql id="Base_Column_List" >
 		`id`
@@ -28,6 +29,7 @@
 		,`rabbitmq_queue_name`
 		,`rabbitmq_virtual_host`
 		,`status`
+		,`group`
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
     SELECT 
@@ -72,6 +74,7 @@
 	  ,`rabbitmq_queue_name`
 	  ,`rabbitmq_virtual_host`
 	  ,`status`
+	  ,`group`
       )
     VALUES (
 		  
@@ -96,6 +99,8 @@
 		  #{rabbitmqVirtualHost}
 		  ,
 		  #{status}
+		  ,
+		  #{group}
       )
   </insert>
   <insert id="insertSelective" parameterType="com.rabbitprovider.demo.pojo.Rabbitconfig" >
@@ -137,6 +142,9 @@
 		  <if test="status != null" >
 			`status`,
 		  </if>
+		  <if test="group != null" >
+			`group`,
+		  </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
 		  <if test="rabbitmqHost != null" >
@@ -171,6 +179,9 @@
 		  </if>
 		  <if test="status != null" >
 			#{status},
+		  </if>
+		  <if test="group != null" >
+			#{group},
 		  </if>
     </trim>
   </insert>
@@ -210,6 +221,9 @@
 	  <if test="status != null" >
         `status` = #{status},
       </if>
+	  <if test="group != null" >
+        `group` = #{group},
+      </if>
     </set>
     WHERE `id` = #{id}
   </update>
@@ -225,7 +239,8 @@
         `yqs_secret` = #{yqsSecret},
         `rabbitmq_queue_name` = #{rabbitmqQueueName},
         `rabbitmq_virtual_host` = #{rabbitmqVirtualHost},
-        `status` = #{status}
+        `status` = #{status},
+        `group` = #{group}
     WHERE `id` = #{id}
   </update>
   <update id="updateByCondition" parameterType="java.util.Map" >
@@ -263,6 +278,9 @@
       </if>
 	  <if test="entity.status != null" >
         `status` = #{entity.status},
+      </if>
+	  <if test="entity.group != null" >
+        `group` = #{entity.group},
       </if>
       <foreach collection="entity.nullColums" item="nullColum">
         `${nullColum}` = NULL,
@@ -317,6 +335,9 @@
 	  <if test="status != null" >
         AND `status` = #{status}
 	  </if>
+	  <if test="group != null" >
+        AND `group` = #{group}
+	  </if>
 	  <if test="condition != null">
 	  <if test="condition.id != null" >
         AND `id` = #{condition.id}
@@ -353,6 +374,9 @@
 	  </if>
 	  <if test="condition.status != null" >
         AND `status` = #{condition.status}
+	  </if>
+	  <if test="condition.group != null" >
+        AND `group` = #{condition.group}
 	  </if>
 	  </if>
 	  <if test="vo != null and !vo.expressionChainList.empty">

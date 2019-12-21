@@ -1,6 +1,8 @@
 package com.rabbitconsumer.demo.controller;
 
 
+import cc.s2m.web.utils.webUtils.util.JSONResultCode;
+import com.rabbitconsumer.demo.configure.RabbitMqGroup;
 import com.rabbitconsumer.demo.enums.EnumIsStart;
 import com.rabbitconsumer.demo.pojo.Rabbitconfig;
 import com.rabbitconsumer.demo.request.TestsRdisRequest;
@@ -23,53 +25,81 @@ public class TestRedis {
     private CountDownLatch latch;
 
     @Autowired
+    private RabbitMqGroup rabbitMqGroup;
+
+    @Autowired
     private IRabbitconfig rabbitconfigService;
 
     @RequestMapping("/addUser")
-    public void testRedis(@RequestBody TestsRdisRequest testsRdisRequest){
-        stringRedisTemplate.convertAndSend("addUser", testsRdisRequest.getQueueName());
+    public JSONResultCode testRedis(@RequestBody TestsRdisRequest testsRdisRequest){
+
+        if(testsRdisRequest.getGroup() == null ||
+                (testsRdisRequest.getGroup() != null && testsRdisRequest.getGroup() != rabbitMqGroup.getGroup() )){
+            return new JSONResultCode(500,"分组错误");
+        }
+
+        stringRedisTemplate.convertAndSend("addUser"+rabbitMqGroup.getGroup(), testsRdisRequest.getQueueName());
         try {
             latch.await();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+        return new JSONResultCode(200,"success");
     }
 
 
     @RequestMapping("/startUser")
-    public void addYqsUser(@RequestBody TestsRdisRequest testsRdisRequest){
+    public JSONResultCode addYqsUser(@RequestBody TestsRdisRequest testsRdisRequest){
+        if(testsRdisRequest.getGroup() == null ||
+                (testsRdisRequest.getGroup() != null && testsRdisRequest.getGroup() != rabbitMqGroup.getGroup() )){
+            return new JSONResultCode(500,"分组错误");
+        }
+
         Rabbitconfig condi = new Rabbitconfig();
         condi.setRabbitmqQueueName(testsRdisRequest.getQueueName());
+        condi.setGroup(testsRdisRequest.getGroup());
 
         Rabbitconfig update = new Rabbitconfig();
         update.setStatus(EnumIsStart.IS_START.getCode());
 
         rabbitconfigService.updateByCondition(update,condi);
-        stringRedisTemplate.convertAndSend("startUser", testsRdisRequest.getQueueName());
+        stringRedisTemplate.convertAndSend("startUser"+rabbitMqGroup.getGroup(), testsRdisRequest.getQueueName());
         try {
             latch.await();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+        return new JSONResultCode(200,"success");
+
     }
 
 
     @RequestMapping("/stopUser")
-    public void stopYqsUser(@RequestBody TestsRdisRequest testsRdisRequest){
+    public JSONResultCode stopYqsUser(@RequestBody TestsRdisRequest testsRdisRequest){
+        if(testsRdisRequest.getGroup() == null ||
+                (testsRdisRequest.getGroup() != null && testsRdisRequest.getGroup() != rabbitMqGroup.getGroup() )){
+            return new JSONResultCode(500,"分组错误");
+        }
         Rabbitconfig condi = new Rabbitconfig();
         condi.setRabbitmqQueueName(testsRdisRequest.getQueueName());
+        condi.setGroup(testsRdisRequest.getGroup());
 
         Rabbitconfig update = new Rabbitconfig();
         update.setStatus(EnumIsStart.IS_STOP_RECEIVE.getCode());
 
         rabbitconfigService.updateByCondition(update,condi);
 
-        stringRedisTemplate.convertAndSend("stopUser", testsRdisRequest.getQueueName());
+        stringRedisTemplate.convertAndSend("stopUser"+rabbitMqGroup.getGroup(), testsRdisRequest.getQueueName());
+
+
 
         try {
+            Thread.sleep(10000);
             latch.await();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+        return new JSONResultCode(200,"success");
+
     }
 }

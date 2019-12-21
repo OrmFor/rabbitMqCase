@@ -17,6 +17,7 @@ public class RabbitconfigEntity extends BaseModelBean {
 	private String rabbitmqQueueName;
 	private String rabbitmqVirtualHost;
 	private Integer status;
+	private Integer group;
 	
     public Integer getId() {
         return id;
@@ -100,6 +101,13 @@ public class RabbitconfigEntity extends BaseModelBean {
     }
 	public RabbitconfigEntity setStatus(Integer status) {
         this.status = status;
+        return this;
+    }
+    public Integer getGroup() {
+        return group;
+    }
+	public RabbitconfigEntity setGroup(Integer group) {
+        this.group = group;
         return this;
     }
 }

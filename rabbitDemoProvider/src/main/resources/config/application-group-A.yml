@@ -1,0 +1,29 @@
+server:
+  port: 9090
+
+spring:
+  datasource:
+    username: root
+    password: password
+    url: jdbc:mysql://132.232.14.40:3309/test?useUnicode=true&characterEncoding=utf-8&useSSL=true&serverTimezone=UTC
+    driver-class-name: com.mysql.jdbc.Driver
+  rabbitmq:
+    host: 132.232.14.40
+    port: 5672
+    username: admin
+    password: admin
+
+mybatis:
+  mapper-locations: classpath:mybatis/*/*.xml
+  type-aliases-package: com.rabbitprovider.demo.pojo
+
+#showSql
+logging:
+  level:
+    com:
+      example:
+        mapper : debug
+
+
+rabbit:
+  group: 1

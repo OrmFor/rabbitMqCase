@@ -1,18 +1,22 @@
 package com.rabbitconsumer.demo.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.rabbitconsumer.demo.domain.ChannelBean;
+import com.rabbitconsumer.demo.domain.MqMessage;
 import com.rabbitconsumer.demo.domain.RabbitChannlConfigBind;
 import com.rabbitconsumer.demo.pojo.Rabbitconfig;
 import com.rabbitconsumer.demo.service.IRabbitconfig;
+import com.rabbitconsumer.demo.service.notify.StrategyContext;
 import com.rabbitconsumer.demo.util.SpringContextUtils;
-import com.rabbitmq.client.*;
+import com.rabbitmq.client.AMQP;
+import com.rabbitmq.client.Channel;
+import com.rabbitmq.client.DefaultConsumer;
+import com.rabbitmq.client.Envelope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
-import java.text.MessageFormat;
 import java.util.concurrent.ConcurrentHashMap;
 
 
@@ -26,18 +30,19 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ThreadReceiveProcess extends Thread {
     private static final Logger LOGGER = LoggerFactory.getLogger(ThreadReceiveProcess.class);
 
-
-    @Autowired
-    private CustomerListener customerListener;
-
     private String messageQueue;
 
     private ConnectionFactory connectionFactory;
 
-    public ThreadReceiveProcess(String message,ConnectionFactory connectionFactory,ConcurrentHashMap<ChannelBean,Channel> channelConcurrentHashMap){
+    private StrategyContext strategyContext;
+
+    public ThreadReceiveProcess(String message,ConnectionFactory connectionFactory,
+                                ConcurrentHashMap<ChannelBean,Channel> channelConcurrentHashMap,
+                                StrategyContext strategyContext){
         this.messageQueue = message;
         this.connectionFactory = connectionFactory;
         this.channelConcurrentHashMap = channelConcurrentHashMap;
+        this.strategyContext = strategyContext;
     }
 
     public void setConnectionFactory(ConnectionFactory connectionFactory) {
@@ -68,7 +73,6 @@ public class ThreadReceiveProcess extends Thread {
                 .userId(bean.getYqsUserId())
                 .build();
 
-       // Channel channel = channelConcurrentHashMap.get(messageQueue);
         Channel channel = connectionFactory.createConnection().createChannel(false);
 
         //声明要关注的队列
@@ -81,24 +85,42 @@ public class ThreadReceiveProcess extends Thread {
                  bind.setChannel(channel);
                  //DefaultConsumer类实现了Consumer接口，通过传入一个频道，
                  // 告诉服务器我们需要那个频道的消息，如果频道中有消息，就会执行回调函数handleDelivery
-                 Consumer consumer = new DefaultConsumer(channel) {
+                 /*Consumer consumer = new DefaultConsumer(channel) {
                      @Override
                      public void handleDelivery(String consumerTag, Envelope envelope,
                                                 AMQP.BasicProperties properties, byte[] body)
                              throws IOException {
                          LOGGER.info("=======================信道重启后绑定开始===============");
                          String message = new String(body, "UTF-8");
-                         if(message.equals("Error")){
-                             throw new RuntimeException("Error");
-                         }
-                         LOGGER.info(MessageFormat.format("Customer = {0}, Received ={1}", messageQueue, message));
-                         LOGGER.info(bind.toString());
+                         MqMessage mqMessage = JSON.parseObject(message,MqMessage.class);
+                         mqMessage.setQueueName(messageQueue);
+                         strategyContext.processNotifyByMsgType(mqMessage);
                          LOGGER.info("=======================信道重启后绑定结束===============");
-
                      }
                  };
-                 //自动回复队列应答 -- RabbitMQ中的消息确认机制
+                   //自动回复队列应答 -- RabbitMQ中的消息确认机制
                  String tag =channel.basicConsume(messageQueue, true, consumer);
+*/
+
+                 Channel finalChannel = channel;
+                 String tag = channel.basicConsume(messageQueue, false, new DefaultConsumer(finalChannel){
+                     @Override
+                     public void handleDelivery(String consumerTag,Envelope envelope,AMQP.BasicProperties properties,byte[] body) throws IOException{
+                         LOGGER.info("=======================信道重启后绑定开始===============");
+                         String message = new String(body, "UTF-8");
+                         MqMessage mqMessage = JSON.parseObject(message,MqMessage.class);
+                         mqMessage.setQueueName(messageQueue);
+                         LOGGER.info(mqMessage.toString());
+                         strategyContext.processNotifyByMsgType(mqMessage);
+                         LOGGER.info("=======================信道重启后绑定结束===============");
+                        // finalChannel.basicAck(envelope.getDeliveryTag(), false);
+                         finalChannel.basicNack(envelope.getDeliveryTag(),false,false);
+
+                     }
+                 });
+
+
+
                  ChannelBean bean1 = new ChannelBean();
                  bean1.setTag(tag);
                  bean1.setQueueName(messageQueue);
@@ -109,7 +131,7 @@ public class ThreadReceiveProcess extends Thread {
                   channel = connectionFactory.createConnection().createChannel(false);
                   channel.queueDeclare(messageQueue, true,
                          false, false, null);
-
+/*
                  Consumer consumer = new DefaultConsumer(channel) {
                      @Override
                      public void handleDelivery(String consumerTag, Envelope envelope,
@@ -120,7 +142,25 @@ public class ThreadReceiveProcess extends Thread {
                      }
                  };
                  //自动回复队列应答 -- RabbitMQ中的消息确认机制
-                 String tag = channel.basicConsume(messageQueue, true, consumer);
+                 String tag = channel.basicConsume(messageQueue, true, consumer);*/
+
+                 Channel finalChannel = channel;
+                 String tag = channel.basicConsume(messageQueue, false, new DefaultConsumer(finalChannel){
+                     @Override
+                     public void handleDelivery(String consumerTag,Envelope envelope,AMQP.BasicProperties properties,byte[] body) throws IOException{
+                         LOGGER.info("=======================信道重启后绑定开始===============");
+                         String message = new String(body, "UTF-8");
+                         MqMessage mqMessage = JSON.parseObject(message,MqMessage.class);
+                         mqMessage.setQueueName(messageQueue);
+                         LOGGER.info(mqMessage.toString());
+                         strategyContext.processNotifyByMsgType(mqMessage);
+                         LOGGER.info("=======================信道重启后绑定结束===============");
+                         // finalChannel.basicAck(envelope.getDeliveryTag(), false);
+                         finalChannel.basicNack(envelope.getDeliveryTag(),false,false);
+
+                     }
+                 });
+
                  ChannelBean bean1 = new ChannelBean();
                  bean1.setTag(tag);
                  bean1.setQueueName(messageQueue);

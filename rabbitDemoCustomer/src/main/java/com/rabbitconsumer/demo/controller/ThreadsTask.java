@@ -1,6 +1,7 @@
 package com.rabbitconsumer.demo.controller;
 
 import com.rabbitconsumer.demo.domain.ChannelBean;
+import com.rabbitconsumer.demo.service.notify.StrategyContext;
 import com.rabbitmq.client.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,10 +34,13 @@ public class ThreadsTask {
     private CustomerListener customerListener;
 
     @Autowired
+    private StrategyContext strategyContext;
+
+    @Autowired
     private ConnectionFactory connectionFactory;
 
 
-    @Scheduled(cron = "*/30 * * * * ?")
+    @Scheduled(cron = "34 */5 * * * ?")
     public void restartThread() {
         ConcurrentHashMap<ChannelBean, Channel> channels = customerListener.getConcurrentHashMap();
         try {
@@ -57,11 +61,12 @@ public class ThreadsTask {
                         if ((flag && consumerCount == 0) || !flag) {
                             channel.close();
                             customerListener.getConcurrentHashMap().remove(channelBean);
-                            new ThreadReceiveProcess(channelBean.getQueueName(), connectionFactory, channels).start();
+                            new ThreadReceiveProcess(channelBean.getQueueName(),
+                                    connectionFactory, channels,strategyContext).start();
                         }
                     }else {
                         //重新开启信道
-                        new ThreadReceiveProcess(channelBean.getQueueName(), connectionFactory,  channels).start();
+                        new ThreadReceiveProcess(channelBean.getQueueName(), connectionFactory,  channels,strategyContext).start();
                     }
 
                 } catch (IOException e1) {

@@ -17,7 +17,7 @@ public class ObserveListener implements Observer {
     @Override
     public void update(Observable o, Object arg) {
         //重启
-        customerListener.customer();
+        //customerListener.customer();
 
     }
 

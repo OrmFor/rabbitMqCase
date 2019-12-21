@@ -24,7 +24,7 @@ public class ObserveThread extends Observable implements Runnable {
     public void run() {
         while (true) {
             try {
-               customerListener.customer();
+               //customerListener.customer();
             } catch (Exception e) {
                 e.printStackTrace();
                 doBusiness();

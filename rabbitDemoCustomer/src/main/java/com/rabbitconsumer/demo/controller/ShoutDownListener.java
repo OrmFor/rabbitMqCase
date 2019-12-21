@@ -15,5 +15,6 @@ public class ShoutDownListener implements ShutDownChannelListener {
     @Override
     public void onShutDown(ShutdownSignalException signal) {
 
+        System.out.println("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
     }
 }

@@ -1,6 +1,8 @@
 package com.rabbitconsumer.demo.controller;
 
+import com.rabbitconsumer.demo.configure.RabbitMqGroup;
 import com.rabbitconsumer.demo.domain.ChannelBean;
+import com.rabbitconsumer.demo.service.notify.StrategyContext;
 import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
 import org.slf4j.Logger;
@@ -36,13 +38,19 @@ public class Receiver {
     private CustomerListener customerListener;
 
     @Autowired
+    private StrategyContext strategyContext;
+
+    @Autowired
+    private RabbitMqGroup rabbitMqGroup;
+
+    @Autowired
     public Receiver(CountDownLatch latch) {
         this.latch = latch;
     }
 
 
     public void receiveMessage4Add(String messageQueue) {
-        LOGGER.info("receiveMessage4Add <" + messageQueue + ">");
+        LOGGER.info("receiveMessage4Add <{0}>");
         ConcurrentHashMap<ChannelBean, Channel> channels = customerListener.getConcurrentHashMap();
         ChannelBean bean = null;
         Channel channel = null;
@@ -58,7 +66,8 @@ public class Receiver {
                     }
                 }
             }
-            new ThreadReceiveProcess(messageQueue, connectionFactory, customerListener.getConcurrentHashMap()).start();
+            new ThreadReceiveProcess(messageQueue, connectionFactory,
+                    customerListener.getConcurrentHashMap(),strategyContext).start();
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -95,7 +104,8 @@ public class Receiver {
                 }
             }
 
-            new ThreadReceiveProcess(messageQueue, connectionFactory, customerListener.getConcurrentHashMap()).start();
+            new ThreadReceiveProcess(messageQueue, connectionFactory,
+                    customerListener.getConcurrentHashMap(),strategyContext).start();
 
         } catch (TimeoutException e) {
             e.printStackTrace();
